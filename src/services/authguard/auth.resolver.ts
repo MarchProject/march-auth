@@ -1,14 +1,9 @@
-import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql'
-import { Inject, Logger, UseGuards, Request } from '@nestjs/common'
+import { Resolver, Mutation, Args, Context } from '@nestjs/graphql'
+import { Inject, Logger, UseGuards } from '@nestjs/common'
 import { logContext } from 'src/common/helpers/log'
-import { PrismaService } from 'src/common/prisma/prisma.service'
-import { AuthGuard } from '@nestjs/passport'
 import * as common from 'src/types'
 import { AuthService } from './auth.service'
-import { uamAuthRole } from './uam'
-import { UserAuthGuard } from '@march/core'
-// import { UserAuthGuard } from '@march/core'
-// import { AuthService } from './auth.service';
+import { UserAuthGuard, uamAuthRole } from '@march/core'
 
 @Resolver()
 export class AuthResolver {

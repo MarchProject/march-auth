@@ -4,12 +4,9 @@ import * as jwt from 'jsonwebtoken'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { logContext } from 'src/common/helpers/log'
 import * as common from 'src/types'
-import { ThisExpression } from 'ts-morph'
-import { JwtService } from '@nestjs/jwt'
-import { jwtToken } from './jwt'
 import * as bcrypt from 'bcrypt'
-// import { InjectRedis, Redis } from '@nestjs-modules/ioredis'
 import { uuid } from 'uuidv4'
+import { jwtToken } from '@march/core'
 @Injectable()
 export class AuthService implements OnModuleInit {
   private readonly loggers = new Logger(AuthService.name)

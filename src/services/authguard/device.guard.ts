@@ -2,20 +2,14 @@ import {
   ExecutionContext,
   HttpException,
   HttpStatus,
-  Inject,
   Injectable,
   Logger,
 } from '@nestjs/common'
 import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql'
-import { JwtService } from '@nestjs/jwt'
 import { AuthGuard } from '@nestjs/passport'
-import { ignoreElements, Observable } from 'rxjs'
 import * as jwt from 'jsonwebtoken'
 import { logContext } from 'src/common/helpers/log'
-import { jwtToken } from './jwt'
-import { uamAuthRole } from './uam'
-import axios from 'axios'
-// import * as Redis from 'ioredis'
+import { jwtToken } from '@march/core'
 
 export interface GraphQlEndpoint {
   endpointType?: string
