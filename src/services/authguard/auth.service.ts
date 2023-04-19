@@ -6,7 +6,7 @@ import { logContext } from 'src/common/helpers/log'
 import * as common from 'src/types'
 import * as bcrypt from 'bcrypt'
 import { uuid } from 'uuidv4'
-import { jwtToken } from '@march/core'
+import { jwtToken } from './jwt'
 @Injectable()
 export class AuthService implements OnModuleInit {
   private readonly loggers = new Logger(AuthService.name)
@@ -96,6 +96,7 @@ export class AuthService implements OnModuleInit {
       const user = await this.validLogin(username, password)
       this.loggers.debug({ valid: user }, logctx)
       const deviceId = uuid()
+      this.loggers.debug({ deviceId}, logctx)
       const access_token = jwt.sign(
         {
           role: user.groups.name,
@@ -111,6 +112,7 @@ export class AuthService implements OnModuleInit {
           expiresIn: '1d',
         },
       )
+      this.loggers.debug({ access_token }, logctx)
       const refresh_token = jwt.sign({ id: user.id }, jwtToken.refresh, {
         expiresIn: '7d',
       })
@@ -122,8 +124,6 @@ export class AuthService implements OnModuleInit {
           refreshToken: refresh_token,
         },
       })
-
-      this.loggers.debug({ access_token }, logctx)
 
       return {
         access_token,

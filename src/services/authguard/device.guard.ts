@@ -9,7 +9,7 @@ import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
 import * as jwt from 'jsonwebtoken'
 import { logContext } from 'src/common/helpers/log'
-import { jwtToken } from '@march/core'
+import { jwtToken } from './jwt'
 
 export interface GraphQlEndpoint {
   endpointType?: string

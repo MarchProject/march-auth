@@ -28,6 +28,7 @@
     "prisma:gen": "prisma generate --schema=./prisma/schema.prisma"
   },
   "dependencies": {
+    "@march/core": "file:../../packages/march-core",
     "@nestjs-modules/ioredis": "^1.0.1",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
@@ -48,6 +49,7 @@
     "axios": "1.2.1",
     "bcrypt": "^5.1.0",
     "crypto-random-string": "3.3.1",
+    "express": "^4.18.2",
     "graphql": "15.5.1",
     "ioredis": "^5.2.5",
     "jsonwebtoken": "^8.5.1",
@@ -60,8 +62,7 @@
     "rxjs": "^7.5.5",
     "ts-morph": "14.0.0",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.13",
-    "@march/core":"file:../../packages/march-core"
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
