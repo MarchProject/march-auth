@@ -2,6 +2,9 @@
   "name": "nest-typescript-starter",
   "private": true,
   "version": "1.0.0",
+  "workspaces": [
+    "packages/**"
+  ],
   "description": "Nest TypeScript starter repository",
   "license": "MIT",
   "scripts": {
@@ -57,7 +60,8 @@
     "rxjs": "^7.5.5",
     "ts-morph": "14.0.0",
     "uuid": "^8.3.2",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "@march/core":"file:../../packages/march-core"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

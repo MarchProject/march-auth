@@ -4,9 +4,10 @@ import { logContext } from 'src/common/helpers/log'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { AuthGuard } from '@nestjs/passport'
 import * as common from 'src/types'
-import { UserAuthGuard } from './auth.guard'
 import { AuthService } from './auth.service'
 import { uamAuthRole } from './uam'
+import { UserAuthGuard } from '@march/core'
+// import { UserAuthGuard } from '@march/core'
 // import { AuthService } from './auth.service';
 
 @Resolver()
@@ -50,7 +51,7 @@ export class AuthResolver {
     return await this.authService.tokenExpire(refreshToken)
   }
 
-  // @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
   @Mutation(() => common.CreateResponse, { name: 'createUser' })
   async createUser(
     @Args('username') username: string,

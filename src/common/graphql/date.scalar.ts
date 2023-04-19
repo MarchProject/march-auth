@@ -3,7 +3,7 @@ import { Kind } from 'graphql'
 
 @Scalar('Date')
 export class DateScalar implements CustomScalar<number, Date> {
-  description = 'Date custom scalar type';
+  description = 'Date custom scalar type'
 
   parseValue(value: number): Date {
     return new Date(value) // value from the client
