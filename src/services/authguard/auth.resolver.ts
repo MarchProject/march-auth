@@ -46,7 +46,7 @@ export class AuthResolver {
     return await this.authService.tokenExpire(refreshToken)
   }
 
-  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  // @UseGuards(new UserAuthGuard(uamAuthRole.Any))
   @Mutation(() => common.CreateResponse, { name: 'createUser' })
   async createUser(
     @Args('username') username: string,

@@ -32,8 +32,10 @@ enum PaymentTypes {
 
 model Users {
   id     String        @id @default(uuid())
-  role  String
+  role  String @db.VarChar(40)
   groups   Groups @relation("Users_Groups", fields: [role], references: [id])
+  shopsId String @db.VarChar(40)
+  shops   Shops @relation("Users_Shops", fields: [shopsId], references: [id])
   username String  
   password String
   email String?
@@ -45,6 +47,12 @@ model Users {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   groupMembers GroupMembers[] @relation("GroupMembers_Users")
+}
+
+model Shops {
+  id     String        @id @default(uuid())
+  name String
+  users Users[] @relation("Users_Shops")
 }
 
 model GroupFunctions {
@@ -77,15 +85,3 @@ model Groups {
   users Users[] @relation("Users_Groups")
 }
 
-
-
-model Payments {
-  id String @id @default(uuid())
-  status PaymentStatus @default(Success)
-  name String
-  lastDay DateTime
-  types PaymentTypes 
-  amount Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}

@@ -40,6 +40,7 @@ export class AuthService implements OnModuleInit {
         username,
         password: hash,
         role: '1', //ADMIN
+        shopsId: '79535192-b49c-41ce-969b-23f559bc48bd',
         createdBy: 'system',
         updatedBy: 'system',
       },
@@ -59,6 +60,7 @@ export class AuthService implements OnModuleInit {
           id: true,
           username: true,
           password: true,
+          shopsId: true,
           groups: {
             select: {
               name: true,
@@ -96,7 +98,7 @@ export class AuthService implements OnModuleInit {
       const user = await this.validLogin(username, password)
       this.loggers.debug({ valid: user }, logctx)
       const deviceId = uuid()
-      this.loggers.debug({ deviceId}, logctx)
+      this.loggers.debug({ deviceId }, logctx)
       const access_token = jwt.sign(
         {
           role: user.groups.name,
@@ -105,6 +107,7 @@ export class AuthService implements OnModuleInit {
           },
           deviceId,
           userId: user.id,
+          shopsId: user.shopsId,
           userName: user.username,
         },
         jwtToken.secret,
