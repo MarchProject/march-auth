@@ -2,9 +2,6 @@
   "name": "march-auth",
   "private": true,
   "version": "1.0.0",
-  "workspaces": [
-    "packages/**"
-  ],
   "description": "Nest TypeScript starter repository",
   "license": "MIT",
   "scripts": {
@@ -29,7 +26,7 @@
     "rebuild":"rm -rf node_modules && pnpm i . && pnpm prisma:gen"
   },
   "dependencies": {
-    "@march/core": "file:../../packages/march-core",
+    "@march/core": "workspace:1.0.0",
     "@nestjs-modules/ioredis": "^1.0.1",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
