@@ -40,7 +40,7 @@ export class AuthService implements OnModuleInit {
         username,
         password: hash,
         role: '1', //ADMIN
-        shopsId: '79535192-b49c-41ce-969b-23f559bc48bd',
+        shopsId: '927b92eb-49a9-4de2-832c-b90203c5ad85',
         createdBy: 'system',
         updatedBy: 'system',
       },
