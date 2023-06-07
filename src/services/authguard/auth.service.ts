@@ -127,7 +127,6 @@ export class AuthService implements OnModuleInit {
           refreshToken: refresh_token,
         },
       })
-
       return {
         access_token,
         refresh_token,

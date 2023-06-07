@@ -17,8 +17,13 @@ import { RedisModule } from '@nestjs-modules/ioredis'
         cdnUrl: 'https://cdn.jsdelivr.net/npm',
       },
       context: ({ req }) => ({ request: req }),
+      cors: {
+        credentials: true,
+        origin: '*',
+      },
       // formatError: process.env.GRAPHQL_FORMAT_ERROR === 'true' ? gqlErrorFilter : undefined,
     }),
+
     // RedisModule.forRoot({
     //   config: {
     //     url: 'redis://0.0.0.0:6379',
