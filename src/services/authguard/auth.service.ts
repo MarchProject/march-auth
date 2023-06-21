@@ -71,6 +71,9 @@ export class AuthService implements OnModuleInit {
                       name: true,
                     },
                   },
+                  create: true,
+                  view: true,
+                  update: true,
                 },
               },
             },
@@ -92,6 +95,22 @@ export class AuthService implements OnModuleInit {
     }
   }
 
+  addPage = async (groupFunctions: any) => {
+    return groupFunctions.reduce((acc, item) => {
+      const { functions, create, view, update } = item
+      const { name } = functions
+
+      const values = []
+      if (create) values.push('CREATE')
+      if (view) values.push('VIEW')
+      if (update) values.push('UPDATE')
+
+      acc[name] = values
+
+      return acc
+    }, {})
+  }
+
   async login(username: string, password: string): Promise<common.Token> {
     const logctx = logContext(AuthService, this.login)
     try {
@@ -99,11 +118,13 @@ export class AuthService implements OnModuleInit {
       this.loggers.debug({ valid: user }, logctx)
       const deviceId = uuid()
       this.loggers.debug({ deviceId }, logctx)
+      const page = await this.addPage(user.groups.groupFunctions)
       const access_token = jwt.sign(
         {
           role: user.groups.name,
           info: {
             functions: user.groups.groupFunctions.map((e) => e.functions.name),
+            page: page,
           },
           deviceId,
           userId: user.id,
@@ -183,6 +204,7 @@ export class AuthService implements OnModuleInit {
       }
       //check user.db db.refreshtoken === refreshToken ? else logout
       //add check user deleted?
+      const page = await this.addPage(getDataAccess.groups.groupFunctions)
       const access_token = jwt.sign(
         {
           role: getDataAccess.groups.name,
@@ -190,6 +212,7 @@ export class AuthService implements OnModuleInit {
             functions: getDataAccess.groups.groupFunctions.map(
               (e) => e.functions.name,
             ),
+            page,
           },
           deviceId: getDataAccess.deviceId,
           userId: getDataAccess.id,

@@ -61,6 +61,9 @@ model GroupFunctions {
   functions   Functions @relation("GroupFunctions_Functions", fields: [functionId], references: [id])
   groupId String
   groups   Groups @relation("GroupFunctions_Groups", fields: [groupId], references: [id])
+  create Boolean @default(false)
+  view Boolean @default(false)
+  update Boolean @default(false)
 }
 
 model Functions {
