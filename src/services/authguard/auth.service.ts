@@ -181,6 +181,7 @@ export class AuthService implements OnModuleInit {
           username: true,
           refreshToken: true,
           deviceId: true,
+          shopsId: true,
           groups: {
             select: {
               name: true,
@@ -191,6 +192,9 @@ export class AuthService implements OnModuleInit {
                       name: true,
                     },
                   },
+                  create: true,
+                  view: true,
+                  update: true,
                 },
               },
             },
@@ -216,6 +220,7 @@ export class AuthService implements OnModuleInit {
           },
           deviceId: getDataAccess.deviceId,
           userId: getDataAccess.id,
+          shopId: getDataAccess.shopsId,
           username: getDataAccess.username,
         },
         jwtToken.secret,
