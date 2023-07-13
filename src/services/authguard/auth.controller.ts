@@ -9,7 +9,6 @@ export class AuthController {
   @UseGuards(DiviceGuard)
   @Get('diviceId')
   async getDiviceId(@Request() req): Promise<String> {
-    console.log({ req: req?.userId })
     const userId = req?.userId
     return await this.authService.getDiviceId(userId)
   }

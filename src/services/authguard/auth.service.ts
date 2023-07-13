@@ -163,16 +163,7 @@ export class AuthService implements OnModuleInit {
     const logctx = logContext(AuthService, this.tokenExpire)
     try {
       const verifyRefresh = jwt.verify(refreshToken, jwtToken.refresh)
-      const { id }: any = jwt.decode(refreshToken)
-
-      // const checkRefresh = await this.repos.users.findUnique({
-      //   where: {
-      //     id,
-      //   },
-      //   select: {
-      //     refreshToken: true,
-      //   },
-      // })
+      const { id, deviceId }: any = jwt.decode(refreshToken)
       const getDataAccess = await this.repos.users.findUnique({
         where: { id },
         select: {
@@ -203,7 +194,18 @@ export class AuthService implements OnModuleInit {
       })
       this.loggers.debug({ getDataAccess, verifyRefresh }, logctx)
 
-      if (getDataAccess.refreshToken !== refreshToken) {
+      if (
+        getDataAccess.refreshToken !== refreshToken ||
+        getDataAccess.deviceId !== deviceId
+      ) {
+        await this.repos.users.update({
+          where: {
+            id: id,
+          },
+          data: {
+            deviceId: null,
+          },
+        })
         throw new HttpException('Unauthorized', 401)
       }
       //check user.db db.refreshtoken === refreshToken ? else logout
@@ -220,8 +222,8 @@ export class AuthService implements OnModuleInit {
           },
           deviceId: getDataAccess.deviceId,
           userId: getDataAccess.id,
-          shopId: getDataAccess.shopsId,
-          username: getDataAccess.username,
+          shopsId: getDataAccess.shopsId,
+          userName: getDataAccess.username,
         },
         jwtToken.secret,
         {
