@@ -6,7 +6,7 @@ CREATE TABLE `Users` (
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
-    `refreshToken` VARCHAR(191) NULL,
+    `refreshToken` VARCHAR(300) NULL,
     `deviceId` VARCHAR(191) NULL,
     `createdBy` VARCHAR(191) NOT NULL,
     `updatedBy` VARCHAR(191) NOT NULL,
@@ -29,6 +29,9 @@ CREATE TABLE `GroupFunctions` (
     `id` VARCHAR(191) NOT NULL,
     `functionId` VARCHAR(191) NOT NULL,
     `groupId` VARCHAR(191) NOT NULL,
+    `create` BOOLEAN NOT NULL DEFAULT false,
+    `view` BOOLEAN NOT NULL DEFAULT false,
+    `update` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

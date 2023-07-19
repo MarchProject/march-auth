@@ -40,7 +40,7 @@ model Users {
   password String
   email String?
   // accessToken  Boolean? @default(false)
-  refreshToken String?
+  refreshToken String? @db.VarChar(300)
   deviceId String?
   createdBy String
   updatedBy String

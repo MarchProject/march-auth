@@ -5,8 +5,9 @@ import { PrismaService } from 'src/common/prisma/prisma.service'
 import { logContext } from 'src/common/helpers/log'
 import * as common from 'src/types'
 import * as bcrypt from 'bcrypt'
-import { uuid } from 'uuidv4'
+import { v4 as uuidv4 } from 'uuid'
 import { jwtToken } from './jwt'
+
 @Injectable()
 export class AuthService implements OnModuleInit {
   private readonly loggers = new Logger(AuthService.name)
@@ -61,6 +62,7 @@ export class AuthService implements OnModuleInit {
           username: true,
           password: true,
           shopsId: true,
+          deviceId: true,
           groups: {
             select: {
               name: true,
@@ -116,7 +118,7 @@ export class AuthService implements OnModuleInit {
     try {
       const user = await this.validLogin(username, password)
       this.loggers.debug({ valid: user }, logctx)
-      const deviceId = uuid()
+      const deviceId = uuidv4()
       this.loggers.debug({ deviceId }, logctx)
       const page = await this.addPage(user.groups.groupFunctions)
       const access_token = jwt.sign(
@@ -137,9 +139,14 @@ export class AuthService implements OnModuleInit {
         },
       )
       this.loggers.debug({ access_token }, logctx)
-      const refresh_token = jwt.sign({ id: user.id }, jwtToken.refresh, {
-        expiresIn: '7d',
-      })
+      const refresh_token = jwt.sign(
+        { id: user.id, deviceId },
+        jwtToken.refresh,
+        {
+          expiresIn: '7d',
+        },
+      )
+      this.loggers.debug({ refresh_token: refresh_token.length }, logctx)
       //save refresh token to user.db
       await this.repos.users.update({
         where: { id: user.id },
@@ -155,6 +162,7 @@ export class AuthService implements OnModuleInit {
         username: user.username,
       }
     } catch (error) {
+      this.loggers.debug(error, logctx)
       throw new HttpException('wrong username or password', 403)
     }
   }

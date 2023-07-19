@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE `GroupFunctions` ADD COLUMN `create` BOOLEAN NOT NULL DEFAULT false,
-    ADD COLUMN `update` BOOLEAN NOT NULL DEFAULT false,
-    ADD COLUMN `view` BOOLEAN NOT NULL DEFAULT false;
