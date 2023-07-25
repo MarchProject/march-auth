@@ -2,8 +2,9 @@ import { NestFactory } from '@nestjs/core'
 import { json, urlencoded } from 'express'
 import { AppModule } from './app.module'
 import { CorsOptions } from 'apollo-server-express'
+import { ConfigService } from '@march/core'
 // import { graphqlUploadExpress } from 'graphql-upload'
-
+const config = ConfigService.load()
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -17,13 +18,11 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
     credentials: true,
   }
-
-  const port = 3001
   app.enableCors(options)
-  
-  await app.listen(port)
-  console.log(await app.getUrl())
-  const url = `http://0.0.0.0:${port}/graphql`
+
+  await app.listen(config.auth.rest.port)
+  console.log(`Application is running on: ${await app.getUrl()}`)
+  const url = `http://0.0.0.0:${config.auth.rest.port}/graphql`
   console.log(url)
 }
 bootstrap()
