@@ -31,6 +31,8 @@
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
+    "lodash": "^4.17.21",
+    "@types/lodash": "^4.14.195",
     "@nestjs/core": "^9.0.0",
     "@nestjs/graphql": "7.4.6",
     "@nestjs/jwt": "^9.0.0",

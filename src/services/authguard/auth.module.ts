@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common'
 import { AuthResolver } from './auth.resolver'
 import { PrismaService } from 'src/common/prisma/prisma.service'
 import { AuthService } from './auth.service'
-import { AuthController } from './auth.controller'
-import { DiviceGuard } from './device.guard'
 @Module({
   // imports: [
   //   RedisModule.forRoot({
@@ -21,12 +19,11 @@ import { DiviceGuard } from './device.guard'
   //   }),
   // ],
   // imports: [UserAuthGuard],
-  controllers: [AuthController],
+  controllers: [],
   providers: [
     AuthResolver,
     PrismaService,
     AuthService,
-    DiviceGuard,
   ],
 })
 export class AuthModule {}

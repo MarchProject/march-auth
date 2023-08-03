@@ -9,7 +9,7 @@ import { GqlContextType, GqlExecutionContext } from '@nestjs/graphql'
 import { AuthGuard } from '@nestjs/passport'
 import * as jwt from 'jsonwebtoken'
 import { logContext } from 'src/common/helpers/log'
-import { jwtToken } from './jwt'
+import { jwtToken } from '../authguard/jwt'
 
 export interface GraphQlEndpoint {
   endpointType?: string
@@ -71,7 +71,7 @@ export class DiviceGuard extends AuthGuard('jwt') {
     }
 
     const accessToken = authorizationHeader.replace('Bearer ', '')
-
+    console.log({ accessToken })
     try {
       const jwtVerifyResultDivice: any = jwt.verify(
         accessToken,

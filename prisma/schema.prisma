@@ -14,20 +14,9 @@ enum RoleUser {
   SUPERADMIN
 }
 
-enum PaymentStatus {
-  Success
-  Wait
-}
-
-enum PaymentTypes {
-  Utility
-  CreditCard
-  Telecom
-  Insurance
-  Loan
-  Leasing
-  Education
-  Other
+enum TypeGQL {
+  MUTATION
+  QUERY
 }
 
 model Users {
@@ -36,9 +25,9 @@ model Users {
   groups   Groups @relation("Users_Groups", fields: [role], references: [id])
   shopsId String @db.VarChar(40)
   shops   Shops @relation("Users_Shops", fields: [shopsId], references: [id])
-  username String  
+  username String  @unique
   password String
-  email String?
+  email String? @unique
   // accessToken  Boolean? @default(false)
   refreshToken String? @db.VarChar(300)
   deviceId String?
@@ -46,17 +35,25 @@ model Users {
   updatedBy String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  groupMembers GroupMembers[] @relation("GroupMembers_Users")
 }
 
 model Shops {
   id     String        @id @default(uuid())
-  name String
+  name String @unique
+  description String?
+  createdBy String 
+  updatedBy String 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   users Users[] @relation("Users_Shops")
+  groups Groups[] @relation("Groups_Shops")
+  groupTasks GroupTasks[] @relation("GroupTasks_Shops")
+  
 }
 
 model GroupFunctions {
   id     String        @id @default(uuid())
+  name String @unique
   functionId String 
   functions   Functions @relation("GroupFunctions_Functions", fields: [functionId], references: [id])
   groupId String
@@ -68,23 +65,69 @@ model GroupFunctions {
 
 model Functions {
   id     String        @id @default(uuid())
-  name String
+  name String @unique
   groupFunctions GroupFunctions[] @relation("GroupFunctions_Functions")
-}
-
-model GroupMembers {
-  id     String        @id @default(uuid())
-  userId String
-  users   Users @relation("GroupMembers_Users", fields: [userId], references: [id])
-  groupId String
-  groups   Groups @relation("GroupMembers_Groups", fields: [groupId], references: [id])
+  tasks Tasks[] @relation("Tasks_Functions")
 }
 
 model Groups {
   id     String        @id @default(uuid())
-  name String
+  name String @unique
+  shopsId String @db.VarChar(40)
+  shops   Shops @relation("Groups_Shops", fields: [shopsId], references: [id])
   groupFunctions GroupFunctions[] @relation("GroupFunctions_Groups")
-  groupMembers GroupMembers[] @relation("GroupMembers_Groups")
-  users Users[] @relation("Users_Groups")
+  users Users[] @relation("Users_Groups") 
+  groupTasks GroupTasks[] @relation("GroupTasks_Groups")
 }
 
+
+model Tasks {
+  id String @id @default(uuid())
+  name String @unique
+  functionId String @db.VarChar(40)
+  description String?
+  functions   Functions @relation("Tasks_Functions", fields: [functionId], references: [id])
+  groupTasks GroupTasks[] @relation("GroupTasks_Tasks")
+  apiTasks ApiTasks[] @relation("ApiTasks_Tasks")
+}
+
+model GroupTasks {
+  id String @id @default(uuid())
+  name String @unique
+  groupId String
+  groups   Groups @relation("GroupTasks_Groups", fields: [groupId], references: [id])
+  taskId String
+  tasks   Tasks @relation("GroupTasks_Tasks", fields: [taskId], references: [id])
+  shopsId String @db.VarChar(40)
+  shops   Shops @relation("GroupTasks_Shops", fields: [shopsId], references: [id])
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuthGuardApis {
+  id String @id @default(uuid())
+  name String @unique
+  type TypeGQL
+  class String
+  scopesApisId String
+  scopesApis   ScopesApis @relation("AuthGuardApis_ScopesApis", fields: [scopesApisId], references: [id])
+}
+
+model ScopesApis {
+  id String @id @default(uuid())
+  name String @unique
+  service String?
+  authGuardApis AuthGuardApis[] @relation("AuthGuardApis_ScopesApis")
+  apiTasks ApiTasks[] @relation("ApiTasks_ScopesApis")
+}
+
+model ApiTasks {
+ id String @id @default(uuid())
+ name String @unique
+ scopesApisId String
+ scopesApis   ScopesApis @relation("ApiTasks_ScopesApis", fields: [scopesApisId], references: [id])
+ taskId String
+ tasks   Tasks @relation("ApiTasks_Tasks", fields: [taskId], references: [id])
+}

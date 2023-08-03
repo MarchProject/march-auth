@@ -65,6 +65,7 @@ export class AuthService implements OnModuleInit {
           deviceId: true,
           groups: {
             select: {
+              id: true,
               name: true,
               groupFunctions: {
                 select: {
@@ -113,6 +114,31 @@ export class AuthService implements OnModuleInit {
     }, {})
   }
 
+  async addTask(groupId: string, shopsId: string) {
+    const logctx = logContext(AuthService, this.addTask)
+    this.loggers.debug({ shopsId, groupId }, logctx)
+    try {
+      const taskList = await this.repos.groupTasks.findMany({
+        where: {
+          groupId,
+          shopsId,
+        },
+        select: {
+          tasks: true,
+        },
+      })
+      this.loggers.debug({ taskList }, logctx)
+      const tasks = taskList.map((t) => {
+        return t.tasks.name
+      })
+      this.loggers.debug({ tasks }, logctx)
+      return tasks
+    } catch (error) {
+      this.loggers.error({ error }, logctx)
+      throw new HttpException('Internal Server Error', 500)
+    }
+  }
+
   async login(username: string, password: string): Promise<common.Token> {
     const logctx = logContext(AuthService, this.login)
     try {
@@ -121,12 +147,14 @@ export class AuthService implements OnModuleInit {
       const deviceId = uuidv4()
       this.loggers.debug({ deviceId }, logctx)
       const page = await this.addPage(user.groups.groupFunctions)
+      const tasks = await this.addTask(user.groups.id, user.shopsId)
       const access_token = jwt.sign(
         {
-          role: user.groups.name,
+          role: user.groups.name.split('|')[0].toUpperCase(),
           info: {
             functions: user.groups.groupFunctions.map((e) => e.functions.name),
             page: page,
+            tasks: tasks,
           },
           deviceId,
           userId: user.id,
@@ -183,6 +211,7 @@ export class AuthService implements OnModuleInit {
           shopsId: true,
           groups: {
             select: {
+              id: true,
               name: true,
               groupFunctions: {
                 select: {
@@ -219,14 +248,19 @@ export class AuthService implements OnModuleInit {
       //check user.db db.refreshtoken === refreshToken ? else logout
       //add check user deleted?
       const page = await this.addPage(getDataAccess.groups.groupFunctions)
+      const tasks = await this.addTask(
+        getDataAccess.groups.id,
+        getDataAccess.shopsId,
+      )
       const access_token = jwt.sign(
         {
-          role: getDataAccess.groups.name,
+          role: getDataAccess.groups.name.split('|')[0].toUpperCase(),
           info: {
             functions: getDataAccess.groups.groupFunctions.map(
               (e) => e.functions.name,
             ),
             page,
+            tasks,
           },
           deviceId: getDataAccess.deviceId,
           userId: getDataAccess.id,
@@ -280,22 +314,6 @@ export class AuthService implements OnModuleInit {
       return {
         id: deleteRefresh.id,
       }
-    } catch (error) {
-      throw new HttpException('Internal Server Error', 500)
-    }
-  }
-
-  async getDiviceId(userId: string): Promise<String> {
-    try {
-      const { deviceId } = await this.repos.users.findUnique({
-        where: {
-          id: userId,
-        },
-        select: {
-          deviceId: true,
-        },
-      })
-      return deviceId
     } catch (error) {
       throw new HttpException('Internal Server Error', 500)
     }

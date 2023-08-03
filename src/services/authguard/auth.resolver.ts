@@ -13,16 +13,6 @@ export class AuthResolver {
   @Inject(AuthService) private authService: AuthService
   // @InjectRedis() private readonly redis: Redis
 
-  // @UseGuards(GqlAuthGuard)
-  // @Query(() => [common.Payment], { name: 'getPaymentList' })
-  // async getPaymentList(@Args('id') id: string): Promise<common.Payment[]> {
-  //   const logctx = logContext(AuthResolver, this.getPaymentList)
-  //   const user = 'name'
-  //   this.loggers.debug({ user }, logctx)
-  //   const payments = await this.authService.getPaymentList(id)
-  //   return payments
-  // }
-
   @Mutation(() => common.Token, { name: 'signIn' })
   async signIn(
     @Args('username') username: string,
@@ -59,6 +49,7 @@ export class AuthResolver {
     return result
   }
 
+  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
   @Mutation(() => String, { name: 'redis' })
   async TestRedis(@Args('test') test: string): Promise<String> {
     const logctx = logContext(AuthResolver, this.TestRedis)
@@ -66,7 +57,9 @@ export class AuthResolver {
     // await this.redis.set('key2', 'Redis data!')
     this.loggers.debug({ test }, logctx)
 
-    return await this.authService.testRedis()
+    // return await this.authService.testRedis()
+
+    return '123'
   }
 
   @UseGuards(new UserAuthGuard(uamAuthRole.Any))
