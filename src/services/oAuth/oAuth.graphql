@@ -1,0 +1,8 @@
+
+
+
+type Mutation {
+     oAuthUrl: String
+}
+
+

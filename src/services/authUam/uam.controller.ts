@@ -29,7 +29,17 @@ export class UamController {
       shopName: body.data.shopName,
       descriptionShop: body.data.descriptionShop,
       createdBy: body.data.createdBy,
-      username: body.data.username,
+      email: body.data.email,
     })
   }
+
+  // @Post('createUserAccess')
+  // async createUserAccessOauth(@Body() body: any): Promise<any> {
+  //   return await this.uamService.createUserAccess({
+  //     shopName: body.data.shopName,
+  //     descriptionShop: body.data.descriptionShop,
+  //     createdBy: body.data.createdBy,
+  //     username: body.data.username,
+  //   })
+  // }
 }

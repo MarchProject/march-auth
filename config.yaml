@@ -14,3 +14,11 @@ inventory:
     url: 0.0.0.0:5002
   graphql:
     url: /api/v1/inventory/graphql
+user:
+  rest:
+    port: 3003
+    url: http://localhost:3003
+  grpc:
+    url: 0.0.0.0:5003
+  graphql:
+    url: /api/v1/user/graphql

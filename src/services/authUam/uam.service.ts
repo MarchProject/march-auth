@@ -221,8 +221,10 @@ export class UamService implements OnModuleInit {
     await this.createApisTask()
   }
 
-  async createUserStarter({ shopName, descriptionShop, createdBy, username }) {
-    console.log({ shopName, descriptionShop, createdBy, username })
+  async createUserAccess() {}
+
+  async createUserStarter({ shopName, descriptionShop, createdBy, email }) {
+    console.log({ shopName, descriptionShop, createdBy, email })
     //check Dup
     const shops = await this.repos.shops.findUnique({
       where: {
@@ -294,13 +296,25 @@ export class UamService implements OnModuleInit {
     const saltRounds = 10
 
     const hash = await bcrypt.hash('password', saltRounds)
+
+    // const createUserAccessOauth = await this.repos.mailAccess.create({
+    //   data: {
+    //     email: email,
+    //     role: createGroup.id,
+    //     shopsId: createShop.id,
+    //     isRegistered: false,
+    //     createdBy: createdBy,
+    //     updatedBy: createdBy,
+    //   },
+    // })
+
     const createUser = await this.repos.users.create({
       data: {
         role: createGroup.id,
         shopsId: createShop.id,
-        username: username,
-        password: hash,
-        // email: 'string',
+        username: email.split('@')[0],
+        isRegistered: false,
+        email: email,
         createdBy: createdBy,
         updatedBy: createdBy,
       },

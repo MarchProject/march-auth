@@ -26,10 +26,13 @@ model Users {
   shopsId String @db.VarChar(40)
   shops   Shops @relation("Users_Shops", fields: [shopsId], references: [id])
   username String  @unique
-  password String
+  password String?
   email String? @unique
+  isRegistered Boolean? @default(true)
+  picture String?
   // accessToken  Boolean? @default(false)
   refreshToken String? @db.VarChar(300)
+  deleted Boolean @default(false)
   deviceId String?
   createdBy String
   updatedBy String

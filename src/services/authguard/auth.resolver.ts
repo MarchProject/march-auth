@@ -25,6 +25,15 @@ export class AuthResolver {
     return await this.authService.login(username, password)
   }
 
+  @Mutation(() => common.Token, { name: 'signInOAuth' })
+  async signInOAuth(@Args('code') code: string): Promise<common.Token> {
+    const logctx = logContext(AuthResolver, this.signInOAuth)
+    const user = 'name'
+    this.loggers.debug({ user, code }, logctx)
+
+    return await this.authService.signInOAuth(code)
+  }
+
   @Mutation(() => common.Token, { name: 'tokenExpire' })
   async tokenExpire(
     @Args('refreshToken') refreshToken: string,

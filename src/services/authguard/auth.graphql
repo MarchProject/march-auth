@@ -31,4 +31,5 @@ type Mutation {
   createUser(username: String!, password: String!): CreateResponse
   redis(test: String!): String
   verifyAccessToken(token: String!): VerifyAccessTokenResponse
+  signInOAuth(code: String!): Token
 }

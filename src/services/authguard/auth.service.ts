@@ -1,4 +1,10 @@
-import { HttpException, Inject, Injectable, OnModuleInit } from '@nestjs/common'
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common'
 import { Logger } from '@nestjs/common'
 import * as jwt from 'jsonwebtoken'
 import { PrismaService } from 'src/common/prisma/prisma.service'
@@ -7,6 +13,10 @@ import * as common from 'src/types'
 import * as bcrypt from 'bcrypt'
 import { v4 as uuidv4 } from 'uuid'
 import { jwtToken } from './jwt'
+import * as qs from 'querystring'
+import { configOAtuh } from '../oAuth/constant'
+import axios from 'axios'
+import { get } from 'lodash'
 
 @Injectable()
 export class AuthService implements OnModuleInit {
@@ -16,6 +26,167 @@ export class AuthService implements OnModuleInit {
     private readonly repos: PrismaService, // private jwtService: JwtService, // @InjectRedis() private readonly redis: Redis,
   ) {}
   onModuleInit() {}
+
+  async signInOAuth(code: string): Promise<common.Token> {
+    const logctx = logContext(AuthService, this.signInOAuth)
+    if (!code) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+    }
+    const data = qs.stringify({
+      client_id: configOAtuh.clientId,
+      client_secret: configOAtuh.clientSecret,
+      code,
+      grant_type: 'authorization_code',
+      redirect_uri: configOAtuh.redirectUrl,
+    })
+
+    this.loggers.debug({ data }, logctx)
+    try {
+      const { data: dataOAuth } = await axios.post(configOAtuh.tokenUrl, data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
+      this.loggers.debug({ dataOAuth }, logctx)
+
+      const tokenDecode = jwt.decode(dataOAuth.id_token) as any
+      this.loggers.debug({ tokenDecode }, logctx)
+      await this.revokeToken(dataOAuth.access_token, dataOAuth.refresh_token)
+      const userFirst = await this.repos.users.findUnique({
+        where: {
+          email: tokenDecode.email,
+        },
+        select: {
+          id: true,
+          isRegistered: true,
+          deleted: true,
+        },
+      })
+      this.loggers.debug({ userFirst }, logctx)
+      if (!userFirst?.id || userFirst.deleted) {
+        throw new HttpException('Unauthorized No Access', HttpStatus.UNAUTHORIZED)
+      }
+
+      await this.repos.users.update({
+        where: {
+          id: userFirst.id,
+        },
+        data: {
+          username: tokenDecode.name,
+          isRegistered: true,
+          picture: tokenDecode.picture,
+        },
+      })
+
+      const user = await this.repos.users.findUnique({
+        where: {
+          email: tokenDecode.email,
+        },
+        select: {
+          id: true,
+          username: true,
+          password: true,
+          shopsId: true,
+          isRegistered: true,
+          picture: true,
+          shops: {
+            select: {
+              name: true,
+            },
+          },
+          deviceId: true,
+          groups: {
+            select: {
+              id: true,
+              name: true,
+              groupFunctions: {
+                select: {
+                  functions: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                  create: true,
+                  view: true,
+                  update: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      return await this.genToken(logctx, user)
+    } catch (error) {
+      this.loggers.error(error, `[MarchERR] signInOAuth error`, logctx)
+      throw new HttpException(
+        get(error, 'message', 'Internal Error'),
+        get(error, 'status', 500),
+      )
+    }
+  }
+
+  private async revokeToken(access_token: string, refresh_token: string) {
+    const token = [access_token, refresh_token]
+    try {
+      token.forEach(async (e) => {
+        const response = await axios.post(
+          `${configOAtuh.revokeTokenUrl}?token=${e}`,
+        )
+      })
+    } catch (error) {
+      this.loggers.error(error, `[MarchERR] revokeToken error`)
+    }
+  }
+
+  private async genToken(logctx: string, user: any) {
+    const deviceId = uuidv4()
+    this.loggers.debug({ deviceId, user }, logctx)
+    const page = await this.addPage(user.groups.groupFunctions)
+    const tasks = await this.addTask(user.groups.id, user.shopsId)
+    const access_token = jwt.sign(
+      {
+        role: user.groups.name.split('|')[0].toUpperCase(),
+        info: {
+          functions: user.groups.groupFunctions.map((e) => e.functions.name),
+          page: page,
+          tasks: tasks,
+        },
+        deviceId,
+        userId: user.id,
+        shopsId: user.shopsId,
+        shopName: user.shops.name,
+        userName: user.username,
+        picture: user.picture,
+      },
+      jwtToken.secret,
+      {
+        expiresIn: '1d',
+      },
+    )
+    this.loggers.debug({ access_token }, logctx)
+    const refresh_token = jwt.sign(
+      { id: user.id, deviceId },
+      jwtToken.refresh,
+      {
+        expiresIn: '7d',
+      },
+    )
+    this.loggers.debug({ refresh_token: refresh_token.length }, logctx)
+    //save refresh token to user.db
+    await this.repos.users.update({
+      where: { id: user.id },
+      data: {
+        deviceId,
+        refreshToken: refresh_token,
+      },
+    })
+    return {
+      access_token,
+      refresh_token,
+      userId: user.id,
+      username: user.username,
+    }
+  }
 
   async createUser(
     username: string,
@@ -62,6 +233,11 @@ export class AuthService implements OnModuleInit {
           username: true,
           password: true,
           shopsId: true,
+          shops: {
+            select: {
+              name: true,
+            },
+          },
           deviceId: true,
           groups: {
             select: {
@@ -144,51 +320,7 @@ export class AuthService implements OnModuleInit {
     try {
       const user = await this.validLogin(username, password)
       this.loggers.debug({ valid: user }, logctx)
-      const deviceId = uuidv4()
-      this.loggers.debug({ deviceId }, logctx)
-      const page = await this.addPage(user.groups.groupFunctions)
-      const tasks = await this.addTask(user.groups.id, user.shopsId)
-      const access_token = jwt.sign(
-        {
-          role: user.groups.name.split('|')[0].toUpperCase(),
-          info: {
-            functions: user.groups.groupFunctions.map((e) => e.functions.name),
-            page: page,
-            tasks: tasks,
-          },
-          deviceId,
-          userId: user.id,
-          shopsId: user.shopsId,
-          userName: user.username,
-        },
-        jwtToken.secret,
-        {
-          expiresIn: '1d',
-        },
-      )
-      this.loggers.debug({ access_token }, logctx)
-      const refresh_token = jwt.sign(
-        { id: user.id, deviceId },
-        jwtToken.refresh,
-        {
-          expiresIn: '7d',
-        },
-      )
-      this.loggers.debug({ refresh_token: refresh_token.length }, logctx)
-      //save refresh token to user.db
-      await this.repos.users.update({
-        where: { id: user.id },
-        data: {
-          deviceId,
-          refreshToken: refresh_token,
-        },
-      })
-      return {
-        access_token,
-        refresh_token,
-        userId: user.id,
-        username: user.username,
-      }
+      return await this.genToken(logctx, user)
     } catch (error) {
       this.loggers.debug(error, logctx)
       throw new HttpException('wrong username or password', 403)
@@ -208,7 +340,13 @@ export class AuthService implements OnModuleInit {
           username: true,
           refreshToken: true,
           deviceId: true,
+          picture: true,
           shopsId: true,
+          shops: {
+            select: {
+              name: true,
+            },
+          },
           groups: {
             select: {
               id: true,
@@ -262,9 +400,11 @@ export class AuthService implements OnModuleInit {
             page,
             tasks,
           },
+          picture: getDataAccess.picture,
           deviceId: getDataAccess.deviceId,
           userId: getDataAccess.id,
           shopsId: getDataAccess.shopsId,
+          shopName: getDataAccess.shops.name,
           userName: getDataAccess.username,
         },
         jwtToken.secret,
