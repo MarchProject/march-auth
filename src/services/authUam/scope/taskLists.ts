@@ -50,6 +50,21 @@ export const taskList = [
     functionName: 'MENU:INVENTORY',
   },
   {
+    name: 'INBCC',
+    description: 'INVENTORY_BRANCH_CREATE',
+    functionName: 'MENU:INVENTORY',
+  },
+  {
+    name: 'INBCU',
+    description: 'INVENTORY_BRANCH_UPDATE',
+    functionName: 'MENU:INVENTORY',
+  },
+  {
+    name: 'INBCDELETE',
+    description: 'INVENTORY_BRANCH_DELETE', //DELETE
+    functionName: 'MENU:INVENTORY',
+  },
+  {
     name: 'INUCSV',
     description: 'INVENTORY_UPLOAD_CSV',
     functionName: 'MENU:INVENTORY',

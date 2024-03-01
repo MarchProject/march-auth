@@ -27,6 +27,7 @@ model Users {
   shops   Shops @relation("Users_Shops", fields: [shopsId], references: [id])
   username String  @unique
   password String?
+  isSuperAdmin Boolean? @default(false)
   email String? @unique
   isRegistered Boolean? @default(true)
   picture String?

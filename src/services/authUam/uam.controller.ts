@@ -33,6 +33,11 @@ export class UamController {
     })
   }
 
+  @Post('updateRoleSuperAdmin')
+  async updateRoleSuperAdmin(@Body() body: any): Promise<any> {
+    return await this.uamService.updateRoleSuperAdmin()
+  }
+
   // @Post('createUserAccess')
   // async createUserAccessOauth(@Body() body: any): Promise<any> {
   //   return await this.uamService.createUserAccess({

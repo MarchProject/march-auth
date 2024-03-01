@@ -24,6 +24,14 @@ export const scopesApisList = [
     service: 'Inventory',
   },
   {
+    name: 'InventoryBranchUpsert',
+    service: 'Inventory',
+  },
+  {
+    name: 'InventoryBranchDelete',
+    service: 'Inventory',
+  },
+  {
     name: 'InventoryTrashMaker',
     service: 'Inventory',
   },

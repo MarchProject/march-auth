@@ -5,6 +5,7 @@ CREATE TABLE `Users` (
     `shopsId` VARCHAR(40) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NULL,
+    `isSuperAdmin` BOOLEAN NULL DEFAULT false,
     `email` VARCHAR(191) NULL,
     `isRegistered` BOOLEAN NULL DEFAULT true,
     `picture` VARCHAR(191) NULL,

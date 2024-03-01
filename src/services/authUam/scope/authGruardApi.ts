@@ -30,16 +30,28 @@ export const authGuard = [
     scopesName: 'InventoryTypeDelete',
   },
   {
-    name: 'upsertBrandType',
+    name: 'upsertInventoryBrand',
     type: 'MUTATION',
     class: 'InventoryResolver',
     scopesName: 'InventoryBrandUpsert',
   },
   {
-    name: 'deleteBrandType',
+    name: 'deleteInventoryBrand',
     type: 'MUTATION',
     class: 'InventoryResolver',
     scopesName: 'InventoryBrandDelete',
+  },
+  {
+    name: 'upsertInventoryBranch',
+    type: 'MUTATION',
+    class: 'InventoryResolver',
+    scopesName: 'InventoryBranchUpsert',
+  },
+  {
+    name: 'deleteInventoryBranch',
+    type: 'MUTATION',
+    class: 'InventoryResolver',
+    scopesName: 'InventoryBranchDelete',
   },
   {
     name: 'favoriteInventory',
@@ -84,13 +96,25 @@ export const authGuard = [
     scopesName: 'InventoryMainPage',
   },
   {
-    name: 'getBrandType',
+    name: 'getInventoryBrand',
     type: 'QUERY',
     class: 'InventoryResolver',
     scopesName: 'InventoryMainPage',
   },
   {
-    name: 'getBrandTypes',
+    name: 'getInventoryBrands',
+    type: 'QUERY',
+    class: 'InventoryResolver',
+    scopesName: 'InventoryMainPage',
+  },
+  {
+    name: 'getInventoryBranch',
+    type: 'QUERY',
+    class: 'InventoryResolver',
+    scopesName: 'InventoryMainPage',
+  },
+  {
+    name: 'getInventoryBranchs',
     type: 'QUERY',
     class: 'InventoryResolver',
     scopesName: 'InventoryMainPage',

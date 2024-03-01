@@ -28,6 +28,14 @@ export const apiTasksList = [
     taskName: ['INBDELETE'],
   },
   {
+    scopesName: 'InventoryBranchUpsert',
+    taskName: ['INBCU', 'INBCC'],
+  },
+  {
+    scopesName: 'InventoryBranchDelete',
+    taskName: ['INBCDELETE'],
+  },
+  {
     scopesName: 'InventoryTrashMaker',
     taskName: ['INTRASH'],
   },

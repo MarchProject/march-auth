@@ -223,6 +223,60 @@ export class UamService implements OnModuleInit {
 
   async createUserAccess() {}
 
+  async updateRoleSuperAdmin() {
+    const superAdmins = await this.repos.users.findMany({
+      where: {
+        isSuperAdmin: true,
+      },
+      include: {
+        groups: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    })
+
+    const functions = await this.repos.functions.findMany()
+    const tasks = await this.repos.tasks.findMany()
+
+    for (const superAdmin of superAdmins) {
+      const mapFn = functions.map((f) => {
+        return {
+          name: superAdmin.groups.name + '_' + f.name,
+          functionId: f.id,
+          groupId: superAdmin.groups.id,
+          create: true,
+          view: true,
+          update: true,
+        }
+      })
+
+      const createGroupFunction = await this.repos.groupFunctions.createMany({
+        data: mapFn,
+        skipDuplicates: true,
+      })
+
+      const mapTask = tasks.map((t) => {
+        return {
+          name: superAdmin.groups.name + '_' + t.name,
+          groupId: superAdmin.groups.id,
+          taskId: t.id,
+          shopsId: superAdmin.shopsId,
+          createdBy: 'system',
+          updatedBy: 'system',
+        }
+      })
+
+      const createGroupTasks = await this.repos.groupTasks.createMany({
+        data: mapTask,
+        skipDuplicates: true,
+      })
+    }
+    return 'pass'
+  }
+
   async createUserStarter({ shopName, descriptionShop, createdBy, email }) {
     console.log({ shopName, descriptionShop, createdBy, email })
     //check Dup
@@ -314,6 +368,7 @@ export class UamService implements OnModuleInit {
         shopsId: createShop.id,
         username: email.split('@')[0],
         isRegistered: false,
+        isSuperAdmin: true,
         email: email,
         createdBy: createdBy,
         updatedBy: createdBy,
