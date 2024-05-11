@@ -25,7 +25,7 @@ model Users {
   groups   Groups @relation("Users_Groups", fields: [role], references: [id])
   shopsId String @db.VarChar(40)
   shops   Shops @relation("Users_Shops", fields: [shopsId], references: [id])
-  username String  @unique
+  username String 
   password String?
   isSuperAdmin Boolean? @default(false)
   email String? @unique

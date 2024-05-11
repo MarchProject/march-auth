@@ -3,7 +3,7 @@ import { Inject, Logger, UseGuards } from '@nestjs/common'
 import { logContext } from 'src/common/helpers/log'
 import * as common from 'src/types'
 import { AuthService } from './auth.service'
-import { UserAuthGuard, uamAuthRole } from '@march/core'
+import { UserAuthGuard, uam } from '@march/core'
 
 @Resolver()
 export class AuthResolver {
@@ -45,7 +45,7 @@ export class AuthResolver {
     return await this.authService.tokenExpire(refreshToken)
   }
 
-  // @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  // @UseGuards(new UserAuthGuard(uam.AnyAdminScope))
   @Mutation(() => common.CreateResponse, { name: 'createUser' })
   async createUser(
     @Args('username') username: string,
@@ -58,7 +58,7 @@ export class AuthResolver {
     return result
   }
 
-  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  @UseGuards(new UserAuthGuard(uam.AnyAdminScope))
   @Mutation(() => String, { name: 'redis' })
   async TestRedis(@Args('test') test: string): Promise<String> {
     const logctx = logContext(AuthResolver, this.TestRedis)
@@ -71,7 +71,7 @@ export class AuthResolver {
     return '123'
   }
 
-  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  @UseGuards(new UserAuthGuard(uam.AnyAdminScope))
   @Mutation(() => String, { name: 'signOut' })
   async signOut(
     @Args('id') id: string,
@@ -85,7 +85,7 @@ export class AuthResolver {
     return await this.authService.signOut(id, access_token)
   }
 
-  @UseGuards(new UserAuthGuard(uamAuthRole.Any))
+  @UseGuards(new UserAuthGuard(uam.AnyAdminScope))
   @Mutation(() => String, { name: 'verifyAccessToken' })
   async verifyAccessToken(
     @Args('token') token: string,

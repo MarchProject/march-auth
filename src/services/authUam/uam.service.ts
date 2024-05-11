@@ -213,12 +213,12 @@ export class UamService implements OnModuleInit {
   }
 
   async createNewUam() {
-    await this.createScopesApis()
+    // await this.createScopesApis()
     await this.createFunctions()
     await this.createTasks()
 
     await this.createauthGuard()
-    await this.createApisTask()
+    // await this.createApisTask()
   }
 
   async createUserAccess() {}
@@ -376,5 +376,36 @@ export class UamService implements OnModuleInit {
     })
     return 'pass'
     //group_task_group_function
+  }
+
+  async getPermission(shopsId: string) {
+    const shop = await this.repos.shops.findUnique({
+      where: {
+        id: shopsId,
+      },
+      include: {
+        groups: {
+          include: {
+            groupFunctions: true,
+            groupTasks: true,
+          },
+        },
+        users: {
+          select: {
+            id: true,
+            role: true,
+            shopsId: true,
+            username: true,
+            email: true,
+            picture: true,
+            createdBy: true,
+          },
+        },
+      },
+    })
+
+    const functions = await this.repos.functions.findMany()
+    const tasks = await this.repos.tasks.findMany()
+    return { shop, functions, tasks }
   }
 }

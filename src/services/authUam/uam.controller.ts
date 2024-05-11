@@ -38,6 +38,11 @@ export class UamController {
     return await this.uamService.updateRoleSuperAdmin()
   }
 
+
+  @Post('testGrpc')
+  async testGrpc(@Body() body: any): Promise<any> {
+    return await this.uamService.getPermission(body)
+  }
   // @Post('createUserAccess')
   // async createUserAccessOauth(@Body() body: any): Promise<any> {
   //   return await this.uamService.createUserAccess({

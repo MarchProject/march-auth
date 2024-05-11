@@ -24,10 +24,17 @@
     "seed": "export $(cat dev.env | xargs) && ts-node prisma/seed/index.ts",
     "prisma:gen": "prisma generate --schema=./prisma/schema.prisma",
     "prisma:db": "prisma studio",
-    "rebuild": "rm -rf node_modules && pnpm i . && pnpm prisma:gen"
+    "rebuild": "rm -rf node_modules && pnpm i . && pnpm prisma:gen",
+    "proto:gen:client": "ts-node ./scripts/proto.ts client",
+    "proto:gen:server": "ts-node ./scripts/proto.ts server"
   },
   "dependencies": {
     "@march/core": "workspace:1.0.0",
+    "@grpc/grpc-js": "1.4.5",
+    "@grpc/proto-loader": "0.6.4",
+    "@grpc/nestjs-proto-gen-ts": "workspace:1.0.20",
+    "grpc": "^1.24.11",
+    "google-protobuf": "^3.19.4",
     "@nestjs-modules/ioredis": "^1.0.1",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.0",
@@ -44,6 +51,7 @@
     "@types/lodash": "^4.14.195",
     "@types/passport-google-oauth20": "^2.0.11",
     "apollo-cache-control": "0.14.0",
+    "@nestjs/swagger": "5.1.5",
     "apollo-server-core": "2.25.2",
     "apollo-server-express": "2.25.2",
     "apollo-server-types": "0.9.0",
