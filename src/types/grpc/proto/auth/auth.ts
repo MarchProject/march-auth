@@ -72,6 +72,8 @@ export namespace auth {
         @ApiProperty({ type: () => String }) email?: string;
         @ApiProperty({ type: () => String }) picture?: string;
         @ApiProperty({ type: () => String }) createdBy?: string;
+        @ApiProperty({ type: () => Boolean }) isSuperAdmin?: boolean;
+        @ApiProperty({ type: () => Boolean }) isRegistered?: boolean;
     }
     export class Function {
         @ApiProperty({ type: () => String }) id?: string;
@@ -83,8 +85,24 @@ export namespace auth {
         @ApiProperty({ type: () => String }) functionId?: string;
         @ApiProperty({ type: () => String }) description?: string;
     }
+    export class RevokeSubUserRequest {
+        @ApiProperty({ type: () => String }) userId?: string;
+        @ApiProperty({ type: () => String }) updatedBy?: string;
+    }
+    export class RemoveSubUserRequest {
+        @ApiProperty({ type: () => String }) userId?: string;
+        @ApiProperty({ type: () => String }) updatedBy?: string;
+    }
+    export class UpdateRoleUserRequest {
+        @ApiProperty({ type: () => String }) userId?: string;
+        @ApiProperty({ type: () => String }) role?: string;
+        @ApiProperty({ type: () => String }) updatedBy?: string;
+    }
     export interface AuthGrpcService {
         createSubUser(data: CreateSubUserRequest, metadata?: Metadata): Promise<CreateSubUserResponse>;
+        revokeSubUser(data: RevokeSubUserRequest, metadata?: Metadata): Promise<CreateSubUserResponse>;
+        removeSubUser(data: RemoveSubUserRequest, metadata?: Metadata): Promise<CreateSubUserResponse>;
+        updateRoleUser(data: UpdateRoleUserRequest, metadata?: Metadata): Promise<CreateSubUserResponse>;
         getPermission(data: GetPermissionrRequest, metadata?: Metadata): Promise<GetPermissionResponse>;
     }
     // tslint:disable-next-line:no-empty-interface
